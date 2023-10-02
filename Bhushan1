@@ -1,0 +1,60 @@
+import math
+import random
+import smtplib
+from twilio.rest import Client
+import keys
+# to Generate OTP 
+def GenerateOTP():
+    digits = "0123456789"
+    length = len(digits)
+    otp = ""
+
+    for i in range(6):
+        otp += digits[math.floor(random.random()*length)]
+
+    return otp
+# to validate the mobile number
+def ValidateMobile(PhoneNo):
+     if len(PhoneNo) != 10:
+        print("Please enter a valid Mobile number!!")
+        PhoneNo = input("Enter your number:")
+     return PhoneNo
+# to validate the emailid
+def ValidateEmailID(Email):
+    if "@gmail.com" not in Email:
+        print("Please Enter a Valid Email address!!")
+        Email = input("Enter your Email:")
+    return Email
+# to send OTP to input mobile number
+def sendOTPOverMobile(PhoneNo2, OTP):
+    client = Client(keys.account_sid, keys.auth_token)
+    Message = client.messages.create(
+        body="Your 6 digit OTP is "+OTP,
+
+        from_=keys.twilio_number,
+        to='+91'+str(PhoneNo2),
+    )
+    print(Message.body)
+# to send OTP to input emailid
+def sendOTPOverEmail(Email2, OTP):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()  
+    server.login('sronhitty@gmail.com', 'ffhhxdnwdmhgzcqs')
+    message = 'Your 6 digit OTP is '+str(OTP)
+    server.sendmail('sronhitty@gmail.com',
+                    Email2, message)
+    server.quit()
+
+
+
+PhoneNo = input("Enter the number:")
+PhoneNo2 = ValidateMobile(PhoneNo)
+
+Email = input("Enter the Email:")
+Email2 = ValidateEmailID(Email)
+
+OTP = GenerateOTP()
+
+sendOTPOverMobile(PhoneNo2, OTP)
+
+sendOTPOverEmail(Email2, OTP)
